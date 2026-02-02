@@ -46,4 +46,4 @@ jobs:
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: terraform destroy -auto-approve -input=false
-#just destory the resources
+#just destory the resources this one doesn't want to be destroy
