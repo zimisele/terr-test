@@ -3,7 +3,7 @@ terraform {
     bucket = "mys3-prac-demos"
     key    = "demo/terraform-state-file"
     region = "eu-west-1"
-    use_lockfile = true
+   
   }
 }
 
