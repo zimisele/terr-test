@@ -29,3 +29,13 @@ resource "aws_instance" "github" {
     Env = "Dev"
   }
 }
+resource "aws_instance" "demos" {
+  ami = "ami-03446a3af42c5e74e"
+  instance_type = "m5.xlarge"
+  subnet_id = "subnet-0c061f458755eddff"
+  vpc_security_group_ids = [ "sg-034e2601c3c1c1b23" ]
+  tags = {
+    Name = "Deploy"
+    Env = "Prod"
+  }
+}
