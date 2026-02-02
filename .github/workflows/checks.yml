@@ -45,4 +45,5 @@ jobs:
       # ---- APPLY only on merge to main ----
       - name: Terraform Apply
         if: github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: terraform destroy -auto-approve -input=false
+#just destory the resources this one doesn't want to be destroy
