@@ -1,5 +1,5 @@
 name: Terraform
-# I like what i'm doing
+
 on:
   pull_request:
     branches: [ main ]
@@ -11,11 +11,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  terraform:
+  terraform-plan:
     runs-on: ubuntu-latest
-
-    environment:
-      name: production
 
     steps:
       - name: Checkout repo
@@ -26,7 +23,6 @@ jobs:
         with:
           terraform_version: 1.6.6
 
-      # ---- Auth (example: AWS) ----
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -40,13 +36,38 @@ jobs:
       - name: Terraform Format
         run: terraform fmt 
 
-      # ---- PLAN on PR ----
       - name: Terraform Plan
-        if: github.event_name == 'pull_request'
         run: terraform plan -no-color -input=false
 
-      # ---- APPLY only on merge to main ----
+
+  terraform-apply:
+    # 👇 Only run apply on push to main
+    if: github.event_name == 'push'
+    needs: terraform-plan
+    runs-on: ubuntu-latest
+
+    # 👇 Approval happens HERE
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
       - name: Terraform Apply
-        if: github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
-#just destory the resources this one doesn't want to be destroy
